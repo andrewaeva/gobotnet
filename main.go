@@ -10,6 +10,8 @@ import (
 	"unsafe"
 )
 
+import m_register "./register"
+
 var (
 	winhttpdll, _                            = syscall.LoadLibrary("Winhttp.dll")
 	winHttpGetIEProxyConfigForCurrentUser, _ = syscall.GetProcAddress(winhttpdll,
@@ -81,4 +83,5 @@ func CStringToString(cs CString) (s string) {
 func main() {
 	fmt.Println(GetIEProxyFromWinHttp())
 	defer syscall.FreeLibrary(winhttpdll)
+	m_register.Register()
 }
