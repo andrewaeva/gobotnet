@@ -84,4 +84,5 @@ func main() {
 	fmt.Println(GetIEProxyFromWinHttp())
 	defer syscall.FreeLibrary(winhttpdll)
 	m_register.Register()
+
 }
