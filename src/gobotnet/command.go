@@ -27,11 +27,6 @@ func CmdTest() {
 	//SaveImageToFile(image, "1.png")
 }
 
-func GetUsername() string {
-	usr, _ := user.Current()
-	return usr.Username
-}
-
 func getIdentificator() string {
 	ipConfigOut, _ := CmdExec("ipconfig")
 	return uuid.NewV4().String() + GetUsername() + string(ipConfigOut)
@@ -50,6 +45,11 @@ func GetHomeDir() string {
 func GetName() string {
 	usr, _ := user.Current()
 	return usr.Name
+}
+
+func GetUsername() string {
+	usr, _ := user.Current()
+	return usr.Username
 }
 
 func GetOS() string {
