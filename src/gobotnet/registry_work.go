@@ -4,6 +4,27 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
+func RegistryTest() {
+	value, err := GetRegistryKeyValue(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, "test")
+	if err == nil {
+		OutMessage("GetRegistryKeyValue: NOT")
+	}
+
+	WriteRegistryKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, "test", "test_value")
+	value, err = GetRegistryKeyValue(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, "test")
+	if err != nil || value != "test_value" {
+		OutMessage("WriteRegistryKey: NOT")
+	}
+
+	DeleteRegistryKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, "test")
+	value, err = GetRegistryKeyValue(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, "test")
+	if err == nil || value == "test_value" {
+		OutMessage(value)
+		OutMessage(err.Error())
+		OutMessage("DeleteRegistryKey: NOT")
+	}
+}
+
 func GetRegistryKey(typeReg registry.Key, regPath string, access uint32) (key registry.Key, err error) {
 	currentKey, err := registry.OpenKey(typeReg, regPath, access)
 	return currentKey, err

