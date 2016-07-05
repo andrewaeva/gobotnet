@@ -9,16 +9,34 @@ import (
 	"os"
 )
 
-func CheckFileExist(filePath string) error {
+func CheckFileExist(filePath string) bool {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func CreateDir(dirPath string, fileMode os.FileMode) bool {
+	err := os.MkdirAll(dirPath, fileMode)
+	if err != nil {
+		OutMessage(err.Error())
+		return false
+	}
+	return true
+}
+
+func CreateFile(pathFile string) error {
+	file, err := os.Create(pathFile)
+	if err != nil {
 		OutMessage(err.Error())
 		return err
 	}
+	defer file.Close()
 	return nil
 }
 
-func CreateDir(dirPath string, fileMode os.FileMode) error {
-	err := os.MkdirAll(dirPath, fileMode)
+func WriteDataToFile(filePath string, data []byte) error {
+	err := ioutil.WriteFile(filePath, data, 0644)
 	OutMessage(err.Error())
 	return err
 }
