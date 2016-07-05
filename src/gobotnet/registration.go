@@ -19,14 +19,14 @@ var (
 func RegTest() {
 	fmt.Println("REGISTRATION.GO TEST")
 
-	CreateDir(copyProgramDir, 0777)
-	if !CheckFileExist(tokenFile) {
-		CreateFile(tokenFile)
-		SaveToken(tokenFile, token)
-		//CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
-	} else {
+	// CreateDir(copyProgramDir, 0777)
+	// if !CheckFileExist(tokenFile) {
+	// 	CreateFile(tokenFile)
+	// 	SaveToken(tokenFile, token)
+	// 	//CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
+	// } else {
 
-	}
+	// }
 }
 
 func RegisterProgram() {

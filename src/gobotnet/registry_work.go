@@ -4,17 +4,19 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-func GetRegistryKey(typeReg registry.Key, regPath string) (key registry.Key, err error) {
-	currentKey, err := registry.OpenKey(typeReg, regPath, registry.ALL_ACCESS)
+func GetRegistryKey(typeReg registry.Key, regPath string, access uint32) (key registry.Key, err error) {
+	currentKey, err := registry.OpenKey(typeReg, regPath, access)
 	return currentKey, err
 }
 
-func GetRegistryKeyValue(typeReg registry.Key, regPath, nameKey string) (vaue string, err error) {
-	key, err := GetRegistryKey(typeReg, regPath)
+func GetRegistryKeyValue(typeReg registry.Key, regPath, nameKey string) (value string, err error) {
+	key, err := GetRegistryKey(typeReg, regPath, registry.READ)
 	if err != nil {
 		return "", err
 	}
-	value, _, err := key.GetStringValue(nameKey)
+	defer key.Close()
+
+	value, _, err = key.GetStringValue(nameKey)
 	if err != nil {
 		return "", err
 	}
@@ -22,7 +24,7 @@ func GetRegistryKeyValue(typeReg registry.Key, regPath, nameKey string) (vaue st
 }
 
 func IsValueSetRegistryKey(typeReg registry.Key, regPath, nameValue string) error {
-	currentKey, err := GetRegistryKey(typeReg, regPath)
+	currentKey, err := GetRegistryKey(typeReg, regPath, registry.READ)
 	if err != nil {
 		return err
 	}
@@ -33,7 +35,7 @@ func IsValueSetRegistryKey(typeReg registry.Key, regPath, nameValue string) erro
 }
 
 func WriteRegistryKey(typeReg registry.Key, regPath, nameProgram, pathToExecFile string) error {
-	updateKey, err := GetRegistryKey(typeReg, regPath)
+	updateKey, err := GetRegistryKey(typeReg, regPath, registry.WRITE)
 	if err != nil {
 		return err
 	}
@@ -42,7 +44,7 @@ func WriteRegistryKey(typeReg registry.Key, regPath, nameProgram, pathToExecFile
 }
 
 func DeleteRegistryKey(typeReg registry.Key, regPath, nameProgram string) error {
-	deleteKey, err := GetRegistryKey(typeReg, regPath)
+	deleteKey, err := GetRegistryKey(typeReg, regPath, registry.WRITE)
 	if err != nil {
 		return err
 	}

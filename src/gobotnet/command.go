@@ -23,7 +23,7 @@ var (
 func CmdTest() {
 	fmt.Println("CMD_EXEC.GO TEST")
 	// fmt.Println(GetName())
-	// fmt.Println(GetOS())
+	fmt.Println(GetOS())
 	// fmt.Println(GetUid())
 	// fmt.Println(GetUsername())
 	// fmt.Println(GetHomeDir())
@@ -60,13 +60,9 @@ func GetUsername() string {
 }
 
 func GetOS() string {
-	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `Software\Microsoft\Windows NT\CurrentVersion`, registry.READ)
+	value, err := GetRegistryKeyValue(registry.LOCAL_MACHINE, `Software\Microsoft\Windows NT\CurrentVersion`, "ProductName")
 	if err != nil {
-		return ""
-	}
-	value, _, err := key.GetStringValue("ProductName")
-	if err != nil {
-		return ""
+		//return ""
 	}
 	return value
 }
