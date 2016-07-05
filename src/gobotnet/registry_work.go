@@ -9,6 +9,18 @@ func GetRegistryKey(typeReg registry.Key, regPath string) (key registry.Key, err
 	return currentKey, err
 }
 
+func GetRegistryKeyValue(typeReg registry.Key, regPath, nameKey string) (vaue string, err error) {
+	key, err := GetRegistryKey(typeReg, regPath)
+	if err != nil {
+		return "", err
+	}
+	value, _, err := key.GetStringValue(nameKey)
+	if err != nil {
+		return "", err
+	}
+	return value, nil
+}
+
 func IsValueSetRegistryKey(typeReg registry.Key, regPath, nameValue string) error {
 	currentKey, err := GetRegistryKey(typeReg, regPath)
 	if err != nil {
