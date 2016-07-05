@@ -3,6 +3,7 @@ package gobotnet
 import (
 	"fmt"
 	"os/exec"
+	"time"
 )
 
 func CmdExec(cmd string) ([]byte, error) {
@@ -10,5 +11,6 @@ func CmdExec(cmd string) ([]byte, error) {
 }
 
 func OutMessage(message string) {
-	fmt.Println(message)
+	currentTime := time.Now().Local()
+	fmt.Println("[", currentTime.Format(time.RFC850), "] "+message)
 }

@@ -53,7 +53,7 @@ func GetIEProxyFromWinHttp() (*url.URL, error) {
 func DebugLogging(text string) {
 	if Debug {
 		currentTime := time.Now().Local()
-		fmt.Println("[", currentTime.Format("0000-00-00 00:00:00"), "] "+text)
+		fmt.Println("[", currentTime.Format(time.RFC850), "] "+text)
 	}
 }
 

