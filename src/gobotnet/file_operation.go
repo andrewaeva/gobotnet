@@ -10,6 +10,29 @@ import (
 	"path/filepath"
 )
 
+func FileOperationTest() {
+	DeleteFile("Token.token")
+	value := LoadToken("Token.token")
+	if value == "" {
+		OutMessage("Load token OK")
+	} else {
+		OutMessage("Load token NOT")
+	}
+
+	if SaveToken("Token.token", "w354354354353et") {
+		OutMessage("Token save OK")
+	} else {
+		OutMessage("Token save NOT")
+	}
+
+	value = LoadToken("Token.token")
+	if value == "w354354354353et" {
+		OutMessage("Save and load token OK")
+	} else {
+		OutMessage("Save and load token NOT")
+	}
+}
+
 func CheckFileExist(filePath string) bool {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		CheckError(err)
@@ -135,11 +158,11 @@ func RemoveDirWithContet(dir string) error {
 
 func SaveToken(pathFile, token string) bool {
 	err := ioutil.WriteFile(pathFile, []byte(token), 0644)
-	return CheckError(err)
+	return !CheckError(err)
 }
 
 func LoadToken(pathFile string) string {
-	readBytes, err := ioutil.ReadFile(tokenFile)
+	readBytes, err := ioutil.ReadFile(pathFile)
 	if CheckError(err) {
 		return ""
 	}
