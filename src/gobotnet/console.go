@@ -15,8 +15,16 @@ func CmdExec(cmd string) ([]byte, error) {
 }
 
 func OutMessage(message string) {
-	if len(message) > 0 && debugMode {
+	if debugMode && len(message) > 0 {
 		currentTime := time.Now().Local()
 		fmt.Println("[", currentTime.Format(time.RFC850), "] "+message)
 	}
+}
+
+func CheckError(err error) bool {
+	if err != nil {
+		OutMessage(err.Error())
+		return true
+	}
+	return false
 }

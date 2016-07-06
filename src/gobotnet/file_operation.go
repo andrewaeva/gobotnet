@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 func CheckFileExist(filePath string) bool {
@@ -66,47 +67,41 @@ func SaveImageToFile(image *image.RGBA, nameFile string) error {
 
 func CopyFileToDirectory(pathSourceFile string, pathDestFile string) error {
 	sourceFile, err := os.Open(pathSourceFile)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 	defer sourceFile.Close()
 
 	destFile, err := os.Create(pathDestFile)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 	defer destFile.Close()
 
 	_, err = io.Copy(destFile, sourceFile)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 
 	err = destFile.Sync()
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 
 	sourceFileInfo, err := sourceFile.Stat()
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 
 	destFileInfo, err := destFile.Stat()
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 
 	if sourceFileInfo.Size() == destFileInfo.Size() {
 	} else {
 		err = errors.New("Bad copy file")
-		OutMessage(err.Error())
+		CheckError(err)
 		return err
 	}
 	return nil
@@ -114,6 +109,42 @@ func CopyFileToDirectory(pathSourceFile string, pathDestFile string) error {
 
 func DeleteFile(nameFile string) error {
 	err := os.Remove(nameFile)
-	OutMessage(err.Error())
+	CheckError(err)
 	return err
+}
+
+func RemoveDirWithContet(dir string) error {
+	d, err := os.Open(dir)
+	if CheckError(err) {
+		return err
+	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if CheckError(err) {
+		return err
+	}
+	for _, name := range names {
+		err = os.RemoveAll(filepath.Join(dir, name))
+		if CheckError(err) {
+			return err
+		}
+	}
+	err = os.RemoveAll(dir)
+	if CheckError(err) {
+		return err
+	}
+	return nil
+}
+
+func SaveToken(pathFile, token string) bool {
+	err := ioutil.WriteFile(pathFile, []byte(token), 0644)
+	return CheckError(err)
+}
+
+func LoadToken(pathFile string) string {
+	readBytes, err := ioutil.ReadFile(tokenFile)
+	if CheckError(err) {
+		return ""
+	}
+	return string(readBytes)
 }

