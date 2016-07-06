@@ -12,6 +12,7 @@ import (
 
 func CheckFileExist(filePath string) bool {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		CheckError(err)
 		return false
 	}
 	return true
@@ -19,8 +20,7 @@ func CheckFileExist(filePath string) bool {
 
 func CreateDir(dirPath string, fileMode os.FileMode) bool {
 	err := os.MkdirAll(dirPath, fileMode)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return false
 	}
 	return true
@@ -28,8 +28,7 @@ func CreateDir(dirPath string, fileMode os.FileMode) bool {
 
 func CreateFile(pathFile string) error {
 	file, err := os.Create(pathFile)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 	defer file.Close()
@@ -38,26 +37,24 @@ func CreateFile(pathFile string) error {
 
 func WriteDataToFile(filePath string, data []byte) error {
 	err := ioutil.WriteFile(filePath, data, 0644)
-	OutMessage(err.Error())
+	CheckError(err)
 	return err
 }
 
 func ReadFile(nameFile string) (bytesFile []byte, err error) {
 	readBytes, err := ioutil.ReadFile(nameFile)
-	OutMessage(err.Error())
+	CheckError(err)
 	return readBytes, err
 }
 
 func SaveImageToFile(image *image.RGBA, nameFile string) error {
 	f, err := os.Create("./" + nameFile)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 
 	err = png.Encode(f, image)
-	if err != nil {
-		OutMessage(err.Error())
+	if CheckError(err) {
 		return err
 	}
 	f.Close()
