@@ -23,6 +23,10 @@ func RegisterProgram() {
 	CreateDir(copyProgramDir, 0777)
 	CopyFileToDirectory(sourceExecFilePath, copyExecFilePath)
 	RegisterAutoRun()
+
+	if CheckFileExist(tokenFile) {
+		token = LoadToken(tokenFile)
+	}
 }
 
 func UnRegisterProgram() {

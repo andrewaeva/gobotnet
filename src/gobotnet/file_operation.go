@@ -12,7 +12,15 @@ import (
 
 func FileOperationTest() {
 	OutMessage("FileOperation TEST START")
+
 	DeleteFile("Token.token")
+
+	if !CheckFileExist("Token.token") {
+		OutMessage("CheckFileExists OK")
+	} else {
+		OutMessage("CheckFileExists OK")
+	}
+
 	value := LoadToken("Token.token")
 	if value == "" {
 		OutMessage("Load token OK")
@@ -24,6 +32,12 @@ func FileOperationTest() {
 		OutMessage("Token save OK")
 	} else {
 		OutMessage("Token save NOT")
+	}
+
+	if CheckFileExist("Token.token") {
+		OutMessage("CheckFileExists OK")
+	} else {
+		OutMessage("CheckFileExists OK")
 	}
 
 	value = LoadToken("Token.token")
