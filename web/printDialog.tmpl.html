@@ -1,0 +1,35 @@
+<md-dialog aria-label="Print inforamtion"  ng-cloak>
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Print inforamtion</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-checkbox ng-model="print_name" aria-label="Name">
+            NAME
+        </md-checkbox>
+        <br/>
+        <md-checkbox ng-model="print_ip" aria-label="IP">
+            IP
+        </md-checkbox>
+        <br/>
+        <md-checkbox ng-model="print_information" aria-label="Information">
+            IPCONFIG
+        </md-checkbox>
+        <br/>
+        <md-button class="md-raised" aria-label="print_info" ng-click="printInformation()">
+          Form
+        </md-button>
+        <md-button class="md-raised" aria-label="copy_report" ng-click="copyReport()">
+          Copy report
+        </md-button>
+        <br/>
+        <div layout-xs="column" layout-fill layout-wrap layout-margin>
+          <div id="report" ng-bind-html="print_result"></div>
+        </div>
+      </div>
+    </md-dialog-content>
+  </form>
+</md-dialog>

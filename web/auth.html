@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
+</head>
+
+<body>
+    <div ng-app="auth" ng-controller="authControl" layout="column" layout-padding ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <h3><span>Gobonet Web Authorization</span></h3>
+            </div>
+        </md-toolbar>
+        <md-content class="md-no-momentum">
+            <md-input-container class="md-icon-float md-block">
+                <label>Login</label>
+                <input ng-model="username" type="text">
+            </md-input-container>
+            <md-input-container md-no-float class="md-block">
+                <label>Password</label>
+                <input ng-model="password" type="password">
+            </md-input-container>
+            <md-input-container md-no-float class="md-block">
+                <label>server:port</label>
+                <input ng-model="server_host" type="text">
+            </md-input-container>
+            <md-input-container md-no-float class="md-block">
+                <label>server:port for files</label>
+                <input ng-model="server_host_files" type="text">
+            </md-input-container>
+            <md-button class="md-raised" ng-click="SendData()">LOG IN</md-button>
+        </md-content>
+    </div>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="bower_components/angular-aria/angular-aria.min.js"></script>
+    <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+    <script src="bower_components/angular-material/angular-material.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/ngstorage/ngStorage.min.js"></script>
+    <script>
+    var app = angular.module('auth', ['ngStorage', 'ngMaterial']);
+    app.controller('authControl', function($scope, $http, $window) {
+        $scope.username = '';
+        $scope.password = '';
+        $scope.server_host = $window.sessionStorage.getItem('Server')
+        $scope.server_host_files = $window.sessionStorage.getItem('ServerFiles')
+        var loc = $window.location.href;
+        $scope.pathhost = loc.substring(0, loc.lastIndexOf('/'));
+
+        if ($scope.server_host == undefined || $scope.server_host == "") {
+            $scope.server_host = '127.0.0.1:80'
+        }
+        if ($scope.server_host_files == undefined || $scope.server_host_files == "") {
+            $scope.server_host_files = '127.0.0.1:8090/files'
+        }
+
+
+        $scope.CheckAuth = function() {
+            if ($window.sessionStorage.getItem('Token') != undefined) {
+                $window.location.href = $scope.pathhost + '/main.html';
+            }
+        };
+        $scope.CheckAuth()
+
+        $scope.SendData = function() {
+            if ($scope.server_host != "") {
+                $window.sessionStorage.setItem('Server', $scope.server_host);
+            }
+            if ($scope.server_host_files != "") {
+                $window.sessionStorage.setItem('ServerFiles', $scope.server_host_files);
+            }
+            var data = $.param({
+                username: $scope.username,
+                password: $scope.password
+            });
+
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                }
+            }
+            $http.post('http://' + $scope.server_host + '/api/v1/admin/auth', data, config)
+                .success(function(data, status, headers, config) {
+                    $http.defaults.headers.common.Authorization = 'Bearer ' + data.jwt_token;
+                    $window.sessionStorage.setItem('Token', 'Bearer ' + data.jwt_token);
+                    $window.location.href = $scope.pathhost + '/main.html';
+                })
+                .error(function(data, status, header, config) {});
+        };
+
+    });
+    </script>
+</body>
+
+</html>

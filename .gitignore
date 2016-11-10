@@ -1,0 +1,15 @@
+#bat scripts
+*.bat
+*.exe
+*.a
+*.exe~
+*.xml
+*.ids
+db/backend.sqlite
+.idea/
+gobotnet.iml
+ss.png
+test.go
+test.png
+web/bower_components/angular-material/.gitignore
+server/files/77a0b554-2e63-4cef-a470-3bcb6385b30d/screenshots/7d805d4a-6a71-4a0b-9114-77c2544e7f24.png
