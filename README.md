@@ -2,10 +2,10 @@
 
 Pure HTTP and DNS Botnet written in Golang for Windows. C&C also written in Golang Echo Framework (API) and UI written in Angular.
 
-#Wiki 
+# Wiki 
 [Main] (https://github.com/andrewaeva/gobotnet/wiki/Main)
 
-#Features
+# Features
 
 * Information gathering
 * Execute commands
@@ -16,9 +16,9 @@ Pure HTTP and DNS Botnet written in Golang for Windows. C&C also written in Gola
 * Supporting System Proxy and NTLM authentication
 * DNS Tunnel
 
-#Build
+# Build
 
-#Terms of Use
+# Terms of Use
 
 * Do NOT use this on any computer you do not own, or are allowed to run this on;
 * Credits must always be given, With linksback to here;
@@ -26,7 +26,7 @@ Pure HTTP and DNS Botnet written in Golang for Windows. C&C also written in Gola
 * The authors and publishers assume no responsibility;
 * For educational purposes only.
 
-#Authors
+# Authors
 
 * https://github.com/Iljalala
 * https://github.com/zavgoroa
